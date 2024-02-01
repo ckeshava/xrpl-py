@@ -21,7 +21,7 @@ class TestPayment(TestCase):
             "account": _ACCOUNT,
             "fee": _FEE,
             "sequence": _SEQUENCE,
-            "amount": _XRP_AMOUNT,
+            "deliver_max": _XRP_AMOUNT,
             "destination": _DESTINATION,
             "paths": ["random path stuff"],
         }
@@ -33,7 +33,7 @@ class TestPayment(TestCase):
             "account": _ACCOUNT,
             "fee": _FEE,
             "sequence": _SEQUENCE,
-            "amount": _XRP_AMOUNT,
+            "deliver_max": _XRP_AMOUNT,
             "destination": _ACCOUNT,
         }
         with self.assertRaises(XRPLModelException):
@@ -44,7 +44,7 @@ class TestPayment(TestCase):
             "account": _ACCOUNT,
             "fee": _FEE,
             "sequence": _SEQUENCE,
-            "amount": _ISSUED_CURRENCY_AMOUNT,
+            "deliver_max": _ISSUED_CURRENCY_AMOUNT,
             "destination": _DESTINATION,
             "flags": PaymentFlag.TF_PARTIAL_PAYMENT,
         }
@@ -56,7 +56,7 @@ class TestPayment(TestCase):
             "account": _ACCOUNT,
             "fee": _FEE,
             "sequence": _SEQUENCE,
-            "amount": _ISSUED_CURRENCY_AMOUNT,
+            "deliver_max": _ISSUED_CURRENCY_AMOUNT,
             "destination": _DESTINATION,
             "deliver_min": _ISSUED_CURRENCY_AMOUNT,
         }
@@ -68,7 +68,7 @@ class TestPayment(TestCase):
             "account": _ACCOUNT,
             "fee": _FEE,
             "sequence": _SEQUENCE,
-            "amount": _ISSUED_CURRENCY_AMOUNT,
+            "deliver_max": _ISSUED_CURRENCY_AMOUNT,
             "destination": _ACCOUNT,
         }
         with self.assertRaises(XRPLModelException):
@@ -79,7 +79,7 @@ class TestPayment(TestCase):
             "account": _ACCOUNT,
             "fee": _FEE,
             "sequence": _SEQUENCE,
-            "amount": _XRP_AMOUNT,
+            "deliver_max": _XRP_AMOUNT,
             "send_max": _XRP_AMOUNT,
             "destination": _DESTINATION,
         }
@@ -91,7 +91,7 @@ class TestPayment(TestCase):
             "account": _ACCOUNT,
             "fee": _FEE,
             "sequence": _SEQUENCE,
-            "amount": _XRP_AMOUNT,
+            "deliver_max": _XRP_AMOUNT,
             "destination": _DESTINATION,
         }
         tx = Payment(**transaction_dict)
@@ -102,7 +102,7 @@ class TestPayment(TestCase):
             "account": _ACCOUNT,
             "fee": _FEE,
             "sequence": _SEQUENCE,
-            "amount": _ISSUED_CURRENCY_AMOUNT,
+            "deliver_max": _ISSUED_CURRENCY_AMOUNT,
             "send_max": _XRP_AMOUNT,
             "destination": _DESTINATION,
         }
@@ -114,7 +114,7 @@ class TestPayment(TestCase):
             "account": _ACCOUNT,
             "fee": _FEE,
             "sequence": _SEQUENCE,
-            "amount": _XRP_AMOUNT,
+            "deliver_max": _XRP_AMOUNT,
             "send_max": _XRP_AMOUNT,
             "destination": _DESTINATION,
             "flags": PaymentFlag.TF_PARTIAL_PAYMENT,
@@ -122,12 +122,26 @@ class TestPayment(TestCase):
         tx = Payment(**transaction_dict)
         self.assertTrue(tx.is_valid())
 
-    def test_destination_wallet(self):
+    # "amount" field was accepted in rippled versions < 2.0.0. Newer versions of
+    # rippled alias the field as "deliver_max". Client libraries are expected to throw
+    # an error if "amount" field is present in the request.
+    def test_legacy_amount_field(self):
         transaction_dict = {
             "account": _ACCOUNT,
             "fee": _FEE,
             "sequence": _SEQUENCE,
             "amount": _XRP_AMOUNT,
+            "destination": _DESTINATION,
+        }
+        with self.assertRaises(TypeError):
+            Payment(**transaction_dict)
+
+    def test_destination_wallet(self):
+        transaction_dict = {
+            "account": _ACCOUNT,
+            "fee": _FEE,
+            "sequence": _SEQUENCE,
+            "deliver_max": _XRP_AMOUNT,
             "send_max": _XRP_AMOUNT,
             "destination": Wallet.create(),
         }

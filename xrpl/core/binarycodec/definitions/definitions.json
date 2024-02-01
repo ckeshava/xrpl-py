@@ -141,40 +141,40 @@
     [
       "LedgerEntry",
       {
-        "nth": 1,
+        "nth": 257,
         "isVLEncoded": false,
         "isSerialized": false,
-        "isSigningField": true,
+        "isSigningField": false,
         "type": "LedgerEntry"
       }
     ],
     [
       "Transaction",
       {
-        "nth": 1,
+        "nth": 257,
         "isVLEncoded": false,
         "isSerialized": false,
-        "isSigningField": true,
+        "isSigningField": false,
         "type": "Transaction"
       }
     ],
     [
       "Validation",
       {
-        "nth": 1,
+        "nth": 257,
         "isVLEncoded": false,
         "isSerialized": false,
-        "isSigningField": true,
+        "isSigningField": false,
         "type": "Validation"
       }
     ],
     [
       "Metadata",
       {
-        "nth": 1,
+        "nth": 257,
         "isVLEncoded": false,
-        "isSerialized": true,
-        "isSigningField": true,
+        "isSerialized": false,
+        "isSigningField": false,
         "type": "Metadata"
       }
     ],
@@ -1392,6 +1392,16 @@
       "Amount",
       {
         "nth": 1,
+        "isVLEncoded": false,
+        "isSerialized": true,
+        "isSigningField": true,
+        "type": "Amount"
+      }
+    ],
+    [
+      "DeliverMax",
+      {
+        "nth": 32,
         "isVLEncoded": false,
         "isSerialized": true,
         "isSigningField": true,
@@ -2739,7 +2749,6 @@
     "terQUEUED": -89,
     "terPRE_TICKET": -88,
     "terNO_AMM": -87,
-    "terSUBMITTED": -86,
 
     "tesSUCCESS": 0,
 
@@ -2781,7 +2790,7 @@
     "tecKILLED": 150,
     "tecHAS_OBLIGATIONS": 151,
     "tecTOO_SOON": 152,
-    "tecHOOK_ERROR": 153,
+    "tecHOOK_REJECTED": 153,
     "tecMAX_SEQUENCE_REACHED": 154,
     "tecNO_SUITABLE_NFTOKEN_PAGE": 155,
     "tecNFTOKEN_BUY_SELL_MISMATCH": 156,

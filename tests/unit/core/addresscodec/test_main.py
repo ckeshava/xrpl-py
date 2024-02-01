@@ -178,7 +178,7 @@ class TestMain(TestCase):
             _calculate_fee_per_transaction_type(
                 Payment(
                     account="rweYz56rfmQ98cAdRaeTxQS9wVMGnrdsFp",
-                    amount=IssuedCurrencyAmount(
+                    deliver_max=IssuedCurrencyAmount(
                         currency="USD",
                         issuer="rweYz56rfmQ98cAdRaeTxQS9wVMGnrdsFp",
                         value="0.0001",

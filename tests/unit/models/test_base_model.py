@@ -525,7 +525,7 @@ class TestFromDict(TestCase):
 
         p = Payment(
             account="rweYz56rfmQ98cAdRaeTxQS9wVMGnrdsFp",
-            amount=IssuedCurrencyAmount(
+            deliver_max=IssuedCurrencyAmount(
                 currency="USD",
                 issuer="rweYz56rfmQ98cAdRaeTxQS9wVMGnrdsFp",
                 value="0.0001",
@@ -547,7 +547,7 @@ class TestFromDict(TestCase):
             "Sequence": 290,
             "Flags": 0,
             "SigningPubKey": "",
-            "Amount": {
+            "DeliverMax": {
                 "currency": "USD",
                 "issuer": "rweYz56rfmQ98cAdRaeTxQS9wVMGnrdsFp",
                 "value": "0.0001",

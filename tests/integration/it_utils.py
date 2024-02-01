@@ -104,7 +104,7 @@ def fund_wallet(wallet: Wallet) -> None:
     payment = Payment(
         account=MASTER_ACCOUNT,
         destination=wallet.address,
-        amount=FUNDING_AMOUNT,
+        deliver_max=FUNDING_AMOUNT,
     )
     sign_and_submit(payment, client, MASTER_WALLET, check_fee=True)
     client.request(LEDGER_ACCEPT_REQUEST)
@@ -116,7 +116,7 @@ async def fund_wallet_async(
     payment = Payment(
         account=MASTER_ACCOUNT,
         destination=wallet.address,
-        amount=FUNDING_AMOUNT,
+        deliver_max=FUNDING_AMOUNT,
     )
     await sign_and_submit_async(payment, client, MASTER_WALLET, check_fee=True)
     await client.request(LEDGER_ACCEPT_REQUEST)
@@ -345,7 +345,7 @@ def create_amm_pool(
         Payment(
             account=issuer_wallet.classic_address,
             destination=lp_wallet.classic_address,
-            amount=IssuedCurrencyAmount(
+            deliver_max=IssuedCurrencyAmount(
                 currency=currency_code,
                 issuer=issuer_wallet.classic_address,
                 value="500",
@@ -417,7 +417,7 @@ async def create_amm_pool_async(
         Payment(
             account=issuer_wallet.classic_address,
             destination=lp_wallet.classic_address,
-            amount=IssuedCurrencyAmount(
+            deliver_max=IssuedCurrencyAmount(
                 currency=currency_code,
                 issuer=issuer_wallet.classic_address,
                 value="500",

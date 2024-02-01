@@ -172,6 +172,10 @@ def get_field_instance(field_name: str) -> FieldInstance:
     Returns:
         A FieldInstance object for the given field name.
     """
+    # # CK: Todo -- DeliverMax is not present in the definitions map :((
+    # print("Input:  " + field_name)
+    # print("\n==============\n field info map:\n")
+    # print(_FIELD_INFO_MAP.keys())
     info = _FIELD_INFO_MAP[field_name]
     field_header = get_field_header_from_name(field_name)
     return FieldInstance(

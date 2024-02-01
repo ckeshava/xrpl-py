@@ -71,7 +71,8 @@ class Payment(Transaction):
     <http://xrpl.local/payment.html#creating-accounts>`_.
     """
 
-    amount: Amount = REQUIRED  # type: ignore
+    # amount: Amount = REQUIRED  # type: ignore
+    deliver_max: Amount = REQUIRED  # type: ignore
     """
     The amount of currency to deliver. If the Partial Payment flag is set,
     deliver *up to* this amount instead. This field is required.
@@ -130,7 +131,7 @@ class Payment(Transaction):
         errors = super()._get_errors()
 
         # XRP transaction errors
-        if is_xrp(self.amount) and self.send_max is None:
+        if is_xrp(self.deliver_max) and self.send_max is None:
             if self.paths is not None:
                 errors["paths"] = "An XRP-to-XRP payment cannot contain paths."
             if self.account == self.destination:
@@ -150,7 +151,7 @@ class Payment(Transaction):
             ] = "A non-partial payment cannot have a `deliver_min` field."
 
         elif (
-            is_xrp(self.amount)
+            is_xrp(self.deliver_max)
             and (self.send_max and is_xrp(self.send_max))
             and not self.has_flag(PaymentFlag.TF_PARTIAL_PAYMENT)
         ):

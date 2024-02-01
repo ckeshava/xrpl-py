@@ -233,7 +233,7 @@ class TestBetterTransactionFlags(TestCase):
         actual = models.Payment(
             account=ACCOUNT,
             destination=dest,
-            amount=amnt,
+            deliver_max=amnt,
             flags=models.PaymentFlagInterface(
                 tf_limit_quality=True,
                 tf_no_direct_ripple=True,
@@ -246,7 +246,7 @@ class TestBetterTransactionFlags(TestCase):
         expected = models.Payment(
             account=ACCOUNT,
             destination=dest,
-            amount=amnt,
+            deliver_max=amnt,
             flags=[*flags],
         )
         signed_actual = sign(
@@ -345,7 +345,7 @@ class TestBetterTransactionFlags(TestCase):
             pymnt = models.Payment(
                 account=ACCOUNT,
                 destination=dest,
-                amount=amnt,
+                deliver_max=amnt,
             )
             sign(
                 transaction=pymnt,
@@ -363,7 +363,7 @@ class TestBetterTransactionFlags(TestCase):
             tx = models.Payment(
                 account=ACCOUNT,
                 destination=dest,
-                amount=amnt,
+                deliver_max=amnt,
                 flags=[
                     models.PaymentFlagInterface(
                         tf_limit_quality=True,
@@ -377,7 +377,7 @@ class TestBetterTransactionFlags(TestCase):
             tx = models.Payment(
                 account=ACCOUNT,
                 destination=dest,
-                amount=amnt,
+                deliver_max=amnt,
                 flags=["1"],
             )
             sign(transaction=tx, wallet=WALLET)
@@ -385,7 +385,7 @@ class TestBetterTransactionFlags(TestCase):
             tx = models.Payment(
                 account=ACCOUNT,
                 destination=dest,
-                amount=amnt,
+                deliver_max=amnt,
                 flags=[65536, models.PaymentFlagInterface(tf_limit_quality=True)],
             )
             sign(transaction=tx, wallet=WALLET)
