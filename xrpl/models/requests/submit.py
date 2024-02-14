@@ -26,12 +26,11 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, Type, TypeVar
 
 from xrpl.models.requests.request import Request, RequestMethod
-from xrpl.models.utils import KW_ONLY_DATACLASS, require_kwargs_on_init
+from xrpl.models.utils import KW_ONLY_DATACLASS
 
 S = TypeVar("S", bound="Submit")  # any type inherited from Submit
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class Submit(Request):
     """

@@ -11,7 +11,7 @@ from xrpl.models.path import Path
 from xrpl.models.required import REQUIRED
 from xrpl.models.transactions.transaction import Transaction
 from xrpl.models.transactions.types import TransactionType
-from xrpl.models.utils import KW_ONLY_DATACLASS, require_kwargs_on_init
+from xrpl.models.utils import KW_ONLY_DATACLASS
 
 
 class PaymentFlag(int, Enum):
@@ -57,7 +57,6 @@ class PaymentFlagInterface(FlagInterface):
     TF_LIMIT_QUALITY: bool
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class Payment(Transaction):
     """

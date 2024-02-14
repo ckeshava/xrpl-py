@@ -13,7 +13,7 @@ import xrpl.models.amounts  # not a direct import, to get around circular import
 from xrpl.constants import HEX_CURRENCY_REGEX, ISO_CURRENCY_REGEX
 from xrpl.models.base_model import BaseModel
 from xrpl.models.required import REQUIRED
-from xrpl.models.utils import KW_ONLY_DATACLASS, require_kwargs_on_init
+from xrpl.models.utils import KW_ONLY_DATACLASS
 
 
 def _is_valid_currency(candidate: str) -> bool:
@@ -23,7 +23,6 @@ def _is_valid_currency(candidate: str) -> bool:
     )
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class IssuedCurrency(BaseModel):
     """

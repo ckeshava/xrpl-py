@@ -17,7 +17,7 @@ from xrpl.models.requests import PathStep
 from xrpl.models.required import REQUIRED
 from xrpl.models.transactions.types import PseudoTransactionType, TransactionType
 from xrpl.models.types import XRPL_VALUE_TYPE
-from xrpl.models.utils import KW_ONLY_DATACLASS, require_kwargs_on_init
+from xrpl.models.utils import KW_ONLY_DATACLASS
 
 _TRANSACTION_HASH_PREFIX: Final[int] = 0x54584E00
 
@@ -72,7 +72,6 @@ def _value_to_tx_json(value: XRPL_VALUE_TYPE) -> XRPL_VALUE_TYPE:
     return value
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class Memo(NestedModel):
     """
@@ -117,7 +116,6 @@ class Memo(NestedModel):
         return errors
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class Signer(NestedModel):
     """
@@ -155,7 +153,6 @@ class Signer(NestedModel):
 T = TypeVar("T", bound="Transaction")  # any type inherited from Transaction
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class Transaction(BaseModel):
     """

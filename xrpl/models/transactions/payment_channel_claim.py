@@ -7,7 +7,7 @@ from xrpl.models.flags import FlagInterface
 from xrpl.models.required import REQUIRED
 from xrpl.models.transactions.transaction import Transaction
 from xrpl.models.transactions.types import TransactionType
-from xrpl.models.utils import KW_ONLY_DATACLASS, require_kwargs_on_init
+from xrpl.models.utils import KW_ONLY_DATACLASS
 
 
 class PaymentChannelClaimFlag(int, Enum):
@@ -54,7 +54,6 @@ class PaymentChannelClaimFlagInterface(FlagInterface):
     TF_CLOSE: bool
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class PaymentChannelClaim(Transaction):
     """

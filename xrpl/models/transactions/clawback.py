@@ -8,10 +8,9 @@ from xrpl.models.amounts import IssuedCurrencyAmount, is_issued_currency, is_xrp
 from xrpl.models.required import REQUIRED
 from xrpl.models.transactions.transaction import Transaction
 from xrpl.models.transactions.types import TransactionType
-from xrpl.models.utils import KW_ONLY_DATACLASS, require_kwargs_on_init
+from xrpl.models.utils import KW_ONLY_DATACLASS
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class Clawback(Transaction):
     """The clawback transaction claws back issued funds from token holders."""

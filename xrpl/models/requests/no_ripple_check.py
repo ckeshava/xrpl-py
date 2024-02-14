@@ -11,7 +11,7 @@ from typing import Optional
 
 from xrpl.models.requests.request import LookupByLedgerRequest, Request, RequestMethod
 from xrpl.models.required import REQUIRED
-from xrpl.models.utils import KW_ONLY_DATACLASS, require_kwargs_on_init
+from xrpl.models.utils import KW_ONLY_DATACLASS
 
 
 class NoRippleCheckRole(str, Enum):
@@ -21,7 +21,6 @@ class NoRippleCheckRole(str, Enum):
     USER = "user"
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class NoRippleCheck(Request, LookupByLedgerRequest):
     """

@@ -7,10 +7,9 @@ from typing import Optional
 
 from xrpl.models.requests.ledger_entry import LedgerEntryType
 from xrpl.models.requests.request import LookupByLedgerRequest, Request, RequestMethod
-from xrpl.models.utils import KW_ONLY_DATACLASS, require_kwargs_on_init
+from xrpl.models.utils import KW_ONLY_DATACLASS
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class Ledger(Request, LookupByLedgerRequest):
     """

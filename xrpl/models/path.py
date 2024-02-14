@@ -9,10 +9,9 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional
 
 from xrpl.models.base_model import BaseModel
-from xrpl.models.utils import KW_ONLY_DATACLASS, require_kwargs_on_init
+from xrpl.models.utils import KW_ONLY_DATACLASS
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class PathStep(BaseModel):
     """A PathStep represents an individual step along a Path."""

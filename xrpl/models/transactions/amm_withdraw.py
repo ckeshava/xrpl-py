@@ -11,7 +11,7 @@ from xrpl.models.flags import FlagInterface
 from xrpl.models.required import REQUIRED
 from xrpl.models.transactions.transaction import Transaction
 from xrpl.models.transactions.types import TransactionType
-from xrpl.models.utils import KW_ONLY_DATACLASS, require_kwargs_on_init
+from xrpl.models.utils import KW_ONLY_DATACLASS
 
 
 class AMMWithdrawFlag(int, Enum):
@@ -44,7 +44,6 @@ class AMMWithdrawFlagInterface(FlagInterface):
     TF_LIMIT_LP_TOKEN: bool
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class AMMWithdraw(Transaction):
     """

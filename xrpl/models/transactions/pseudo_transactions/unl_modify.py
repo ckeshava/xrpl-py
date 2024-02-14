@@ -10,10 +10,9 @@ from xrpl.models.transactions.pseudo_transactions.pseudo_transaction import (
     PseudoTransaction,
 )
 from xrpl.models.transactions.types import PseudoTransactionType
-from xrpl.models.utils import KW_ONLY_DATACLASS, require_kwargs_on_init
+from xrpl.models.utils import KW_ONLY_DATACLASS
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class UNLModify(PseudoTransaction):
     """

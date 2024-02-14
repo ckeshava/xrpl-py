@@ -14,7 +14,7 @@ from typing import Dict, List, Optional, Union
 from xrpl.models.base_model import BaseModel
 from xrpl.models.requests.request import LookupByLedgerRequest, Request, RequestMethod
 from xrpl.models.required import REQUIRED
-from xrpl.models.utils import KW_ONLY_DATACLASS, require_kwargs_on_init
+from xrpl.models.utils import KW_ONLY_DATACLASS
 from xrpl.models.xchain_bridge import XChainBridge
 
 
@@ -39,7 +39,6 @@ class LedgerEntryType(str, Enum):
     NFT_OFFER = "nft_offer"
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class DepositPreauth(BaseModel):
     """
@@ -62,7 +61,6 @@ class DepositPreauth(BaseModel):
     """
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class Directory(BaseModel):
     """
@@ -86,7 +84,6 @@ class Directory(BaseModel):
     sub_index: Optional[int] = None
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class Escrow(BaseModel):
     """
@@ -109,7 +106,6 @@ class Escrow(BaseModel):
     """
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class Offer(BaseModel):
     """
@@ -132,7 +128,6 @@ class Offer(BaseModel):
     """
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class RippleState(BaseModel):
     """Required fields for requesting a RippleState if not querying by object ID."""
@@ -152,7 +147,6 @@ class RippleState(BaseModel):
     """
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class Ticket(BaseModel):
     """Required fields for requesting a Ticket if not querying by object ID."""
@@ -172,7 +166,6 @@ class Ticket(BaseModel):
     """
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class XChainClaimID(XChainBridge):
     """Required fields for requesting an XChainClaimID if not querying by object ID."""
@@ -186,7 +179,6 @@ class XChainClaimID(XChainBridge):
     """
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class XChainCreateAccountClaimID(XChainBridge):
     """
@@ -203,7 +195,6 @@ class XChainCreateAccountClaimID(XChainBridge):
     """
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class LedgerEntry(Request, LookupByLedgerRequest):
     """

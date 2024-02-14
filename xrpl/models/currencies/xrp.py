@@ -15,10 +15,9 @@ from typing import Any, Dict, Type, Union
 
 from xrpl.models.base_model import BaseModel
 from xrpl.models.exceptions import XRPLModelException
-from xrpl.models.utils import KW_ONLY_DATACLASS, require_kwargs_on_init
+from xrpl.models.utils import KW_ONLY_DATACLASS
 
 
-@require_kwargs_on_init
 @dataclass(frozen=True, **KW_ONLY_DATACLASS)
 class XRP(BaseModel):
     """

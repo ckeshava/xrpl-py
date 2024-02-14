@@ -37,7 +37,7 @@ class TestUtils(TestCase):
             IssuedCurrency(currency, issuer)
 
     def test_throws_if_positional_args_mixed_with_non_positional_args(self):
-        with self.assertRaises(XRPLModelException):
+        with self.assertRaises(TypeError):
             Payment(
                 20,
                 True,
@@ -51,7 +51,7 @@ class TestUtils(TestCase):
             )
 
     def test_positional_args_in_model_constructor_throws(self):
-        with self.assertRaises(XRPLModelException):
+        with self.assertRaises(TypeError):
             Sign(
                 "invalidInput",
                 [1, 2, "example invalid positional arg"],
