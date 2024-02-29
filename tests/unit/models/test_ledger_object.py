@@ -28,6 +28,11 @@ from xrpl.models.ledger_objects import (
     SignerList,
     Ticket,
 )
+from xrpl.models.ledger_objects.account_root import (
+    AccountRootFlags,
+    AccountRootFlagsInterface,
+    parseAccountRootFlags,
+)
 from xrpl.models.ledger_objects.amm import AuctionSlot, VoteEntry
 from xrpl.models.ledger_objects.bridge import Bridge
 from xrpl.models.ledger_objects.ledger_object import LedgerObject
@@ -476,6 +481,37 @@ xchain_owned_create_account_claim_id_json = {
         }
     ],
 }
+
+
+class TestParseFlags(TestCase):
+    def test_parse_account_root_flags(self) -> None:
+        acct_root_flags: int = (
+            AccountRootFlags.LSF_ALLOW_TRUSTLINE_CLAWBACK.value
+            | AccountRootFlags.LSF_DEFAULT_RIPPLE.value
+            | AccountRootFlags.LSF_DEPOSIT_AUTH.value
+        )
+
+        parsed_flags: AccountRootFlagsInterface = parseAccountRootFlags(acct_root_flags)
+
+        self.assertTrue(
+            parsed_flags["LSF_ALLOW_TRUSTLINE_CLAWBACK"]
+            and parsed_flags["LSF_DEFAULT_RIPPLE"]
+            and parsed_flags["LSF_DEPOSIT_AUTH"]
+        )
+
+        self.assertFalse(
+            parsed_flags["LSF_DISABLE_MASTER"]
+            or parsed_flags["LSF_DISALLOW_INCOMING_CHECK"]
+            or parsed_flags["LSF_DISALLOW_INCOMING_NFTOKEN_OFFER"]
+            or parsed_flags["LSF_DISALLOW_INCOMING_PAY_CHAN"]
+            or parsed_flags["LSF_DISALLOW_INCOMING_TRUSTLINE"]
+            or parsed_flags["LSF_DISALLOW_XRP"]
+            or parsed_flags["LSF_GLOBAL_FREEZE"]
+            or parsed_flags["LSF_NO_FREEZE"]
+            or parsed_flags["LSF_PASSWORD_SPENT"]
+            or parsed_flags["LSF_REQUIRE_AUTH"]
+            or parsed_flags["LSF_REQUIRE_DEST_TAG"]
+        )
 
 
 class TestFromTODict(TestCase):

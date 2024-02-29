@@ -63,3 +63,17 @@ def require_kwargs_on_init(cls: Type[_T]) -> Type[_T]:
     cls.__init__ = new_init  # type: ignore
 
     return cast(Type[_T], cls)
+
+
+def isFlagEnabled(flags: int, checkFlag: int) -> bool:
+    """
+    Utility function that checks if a specified flag is enabled in the input
+
+    Args:
+        flags: The input flags in integer format.
+        checkFlag: A specific flag that might or might-not be present in flags
+
+    Returns:
+        bool: A true or false value verifying the presence of checkFlag in flags
+    """
+    return (flags & checkFlag) == checkFlag

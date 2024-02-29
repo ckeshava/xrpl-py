@@ -4,12 +4,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional
+from typing import Optional, cast
 
+from xrpl.models.flags import FlagInterface
 from xrpl.models.ledger_objects.ledger_entry_type import LedgerEntryType
 from xrpl.models.ledger_objects.ledger_object import HasPreviousTxnID, LedgerObject
 from xrpl.models.required import REQUIRED
-from xrpl.models.utils import require_kwargs_on_init
+from xrpl.models.utils import isFlagEnabled, require_kwargs_on_init
 
 
 @require_kwargs_on_init
@@ -151,3 +152,46 @@ class AccountRootFlags(Enum):
     LSF_PASSWORD_SPENT = 0x00010000
     LSF_REQUIRE_AUTH = 0x00040000
     LSF_REQUIRE_DEST_TAG = 0x00020000
+
+
+class AccountRootFlagsInterface(FlagInterface):
+    """Docs: https://xrpl.org/accountset.html#accountset-flags"""
+
+    LSF_ALLOW_TRUSTLINE_CLAWBACK: bool
+    LSF_DEFAULT_RIPPLE: bool
+    LSF_DEPOSIT_AUTH: bool
+    LSF_DISABLE_MASTER: bool
+    LSF_DISALLOW_INCOMING_CHECK: bool
+    LSF_DISALLOW_INCOMING_NFTOKEN_OFFER: bool
+    LSF_DISALLOW_INCOMING_PAY_CHAN: bool
+    LSF_DISALLOW_INCOMING_TRUSTLINE: bool
+    LSF_DISALLOW_XRP: bool
+    LSF_GLOBAL_FREEZE: bool
+    LSF_NO_FREEZE: bool
+    LSF_PASSWORD_SPENT: bool
+    LSF_REQUIRE_AUTH: bool
+    LSF_REQUIRE_DEST_TAG: bool
+
+
+def parseAccountRootFlags(flags: int) -> AccountRootFlagsInterface:
+    """
+    Parses integer flag input into a FlagsInterface object
+
+    Args:
+        flags: Input flags are represented as an integer
+
+    Returns:
+        AccountRootFlagsInterface object is returned
+
+    """
+    # flags_interface will be cast into a AccountRootFlagsInterface at the end
+    # A Dictionary is used instead of a TypedDict because the former allows arbitrary
+    # string indexes. This is useful to traverse across AccountRootFlags
+    flags_interface = {}
+
+    for flag in AccountRootFlags:
+        if isFlagEnabled(flags, flag.value):
+            flags_interface[flag.name] = True
+        else:
+            flags_interface[flag.name] = False
+    return cast(AccountRootFlagsInterface, flags_interface)
