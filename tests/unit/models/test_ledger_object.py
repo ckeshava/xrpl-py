@@ -36,6 +36,11 @@ from xrpl.models.ledger_objects.account_root import (
 from xrpl.models.ledger_objects.amm import AuctionSlot, VoteEntry
 from xrpl.models.ledger_objects.bridge import Bridge
 from xrpl.models.ledger_objects.ledger_object import LedgerObject
+from xrpl.models.ledger_objects.nftoken_offer import (
+    NFTokenOfferFlags,
+    NFTokenOfferFlagsInterface,
+    parseNFTokenOfferFlags,
+)
 from xrpl.models.ledger_objects.xchain_owned_claim_id import (
     XChainClaimProofSig,
     XChainOwnedClaimID,
@@ -484,6 +489,19 @@ xchain_owned_create_account_claim_id_json = {
 
 
 class TestParseFlags(TestCase):
+    def test_parse_nft_offer_flags(self) -> None:
+        # testcase where no flag is set
+        nft_offer_flags: int = 0
+        parsed_flags: NFTokenOfferFlagsInterface = parseNFTokenOfferFlags(
+            nft_offer_flags
+        )
+        self.assertFalse(parsed_flags["LSF_SELL_NFTOKEN"])
+
+        # validating the case when the flag is set
+        nft_offer_flags = NFTokenOfferFlags.LSF_SELL_NFTOKEN.value
+        parsed_flags = parseNFTokenOfferFlags(nft_offer_flags)
+        self.assertTrue(parsed_flags["LSF_SELL_NFTOKEN"])
+
     def test_parse_account_root_flags(self) -> None:
         acct_root_flags: int = (
             AccountRootFlags.LSF_ALLOW_TRUSTLINE_CLAWBACK.value
