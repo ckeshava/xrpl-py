@@ -4,13 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import List
+from typing import List, cast
 
+from xrpl.models.flags import FlagInterface
 from xrpl.models.ledger_objects.ledger_entry_type import LedgerEntryType
 from xrpl.models.ledger_objects.ledger_object import HasPreviousTxnID, LedgerObject
 from xrpl.models.required import REQUIRED
 from xrpl.models.transactions.signer_list_set import SignerEntry
-from xrpl.models.utils import require_kwargs_on_init
+from xrpl.models.utils import isFlagEnabled, require_kwargs_on_init
 
 
 @require_kwargs_on_init
@@ -53,3 +54,36 @@ class SignerListFlag(Enum):
     """The flags for the `SignerList` Ledger Object"""
 
     LSF_ONE_OWNER_COUNT = 0x00010000
+
+
+class SignerListFlagsInterface(FlagInterface):
+    """
+    Docs:
+    https://xrpl.org/docs/references/protocol/ledger-data/ledger-entry-types/signerlist/#signerlist-flags
+    """
+
+    LSF_ONE_OWNER_COUNT: bool
+
+
+def parseSignerListFlags(flags: int) -> SignerListFlagsInterface:
+    """
+    Parses integer flag input into a FlagsInterface object
+
+    Args:
+        flags: Input flags are represented as an integer
+
+    Returns:
+        SignerListFlagsInterface object is returned
+
+    """
+    # flags_interface will be cast into a SignerListFlagsInterface at the end
+    # A Dictionary is used instead of a TypedDict because the former allows arbitrary
+    # string indexes. This is useful to traverse across SignerListFlag enum
+    flags_interface = {}
+
+    for flag in SignerListFlag:
+        if isFlagEnabled(flags, flag.value):
+            flags_interface[flag.name] = True
+        else:
+            flags_interface[flag.name] = False
+    return cast(SignerListFlagsInterface, flags_interface)

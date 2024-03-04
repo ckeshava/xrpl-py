@@ -51,6 +51,11 @@ from xrpl.models.ledger_objects.ripple_state import (
     RippleStateFlagsInterface,
     parseRippleStateFlags,
 )
+from xrpl.models.ledger_objects.signer_list import (
+    SignerListFlag,
+    SignerListFlagsInterface,
+    parseSignerListFlags,
+)
 from xrpl.models.ledger_objects.xchain_owned_claim_id import (
     XChainClaimProofSig,
     XChainOwnedClaimID,
@@ -499,6 +504,17 @@ xchain_owned_create_account_claim_id_json = {
 
 
 class TestParseFlags(TestCase):
+    def test_parse_signer_list_flags(self) -> None:
+        # testcase where no flag is set
+        sl_flags: int = 0
+        parsed_flags: SignerListFlagsInterface = parseSignerListFlags(sl_flags)
+        self.assertFalse(parsed_flags["LSF_ONE_OWNER_COUNT"])
+
+        # validating the case when the flag is set
+        sl_flags = SignerListFlag.LSF_ONE_OWNER_COUNT.value
+        parsed_flags = parseSignerListFlags(sl_flags)
+        self.assertTrue(parsed_flags["LSF_ONE_OWNER_COUNT"])
+
     def test_parse_ripple_state_flags(self) -> None:
         rs_flags: int = (
             RippleStateFlag.LSF_HIGH_FREEZE.value
