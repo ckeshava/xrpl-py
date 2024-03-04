@@ -46,6 +46,11 @@ from xrpl.models.ledger_objects.offer import (
     OfferFlagsInterface,
     parseOfferFlags,
 )
+from xrpl.models.ledger_objects.ripple_state import (
+    RippleStateFlag,
+    RippleStateFlagsInterface,
+    parseRippleStateFlags,
+)
 from xrpl.models.ledger_objects.xchain_owned_claim_id import (
     XChainClaimProofSig,
     XChainOwnedClaimID,
@@ -494,6 +499,23 @@ xchain_owned_create_account_claim_id_json = {
 
 
 class TestParseFlags(TestCase):
+    def test_parse_ripple_state_flags(self) -> None:
+        rs_flags: int = (
+            RippleStateFlag.LSF_HIGH_FREEZE.value
+            | RippleStateFlag.LSF_HIGH_NO_RIPPLE.value
+            | RippleStateFlag.LSF_HIGH_AUTH.value
+        )
+        parsed_flags: RippleStateFlagsInterface = parseRippleStateFlags(rs_flags)
+        self.assertFalse(parsed_flags["LSF_HIGH_RESERVE"])
+        self.assertFalse(parsed_flags["LSF_LOW_AUTH"])
+        self.assertFalse(parsed_flags["LSF_LOW_FREEZE"])
+        self.assertFalse(parsed_flags["LSF_LOW_NO_RIPPLE"])
+        self.assertFalse(parsed_flags["LSF_LOW_RESERVE"])
+
+        self.assertTrue(parsed_flags["LSF_HIGH_FREEZE"])
+        self.assertTrue(parsed_flags["LSF_HIGH_NO_RIPPLE"])
+        self.assertTrue(parsed_flags["LSF_HIGH_AUTH"])
+
     def test_parse_offer_flags(self) -> None:
         # testcase where no flag is set
         offer_flags: int = 0
