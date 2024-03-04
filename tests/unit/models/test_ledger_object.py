@@ -41,6 +41,11 @@ from xrpl.models.ledger_objects.nftoken_offer import (
     NFTokenOfferFlagsInterface,
     parseNFTokenOfferFlags,
 )
+from xrpl.models.ledger_objects.offer import (
+    OfferFlag,
+    OfferFlagsInterface,
+    parseOfferFlags,
+)
 from xrpl.models.ledger_objects.xchain_owned_claim_id import (
     XChainClaimProofSig,
     XChainOwnedClaimID,
@@ -489,6 +494,19 @@ xchain_owned_create_account_claim_id_json = {
 
 
 class TestParseFlags(TestCase):
+    def test_parse_offer_flags(self) -> None:
+        # testcase where no flag is set
+        offer_flags: int = 0
+        parsed_flags: OfferFlagsInterface = parseOfferFlags(offer_flags)
+        self.assertFalse(parsed_flags["LSF_PASSIVE"])
+        self.assertFalse(parsed_flags["LSF_SELL"])
+
+        # validating the case when one of the flags is set
+        offer_flags = OfferFlag.LSF_PASSIVE.value
+        parsed_flags = parseOfferFlags(offer_flags)
+        self.assertTrue(parsed_flags["LSF_PASSIVE"])
+        self.assertFalse(parsed_flags["LSF_SELL"])
+
     def test_parse_nft_offer_flags(self) -> None:
         # testcase where no flag is set
         nft_offer_flags: int = 0

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, Union, cast
+from typing import Optional, TypeVar, Union, cast
 
 from xrpl.models.base_model import BaseModel
 from xrpl.models.flags import FlagInterface
@@ -12,6 +12,8 @@ from xrpl.models.ledger_objects.ledger_entry_type import LedgerEntryType
 from xrpl.models.ledger_objects.ledger_object import HasPreviousTxnID, LedgerObject
 from xrpl.models.required import REQUIRED
 from xrpl.models.utils import isFlagEnabled, require_kwargs_on_init
+
+T = TypeVar("T")
 
 
 @require_kwargs_on_init

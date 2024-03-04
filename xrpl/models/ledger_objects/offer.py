@@ -4,13 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, Union
+from typing import Optional, Union, cast
 
 from xrpl.models.amounts.issued_currency_amount import IssuedCurrencyAmount
+from xrpl.models.flags import FlagInterface
 from xrpl.models.ledger_objects.ledger_entry_type import LedgerEntryType
 from xrpl.models.ledger_objects.ledger_object import HasPreviousTxnID, LedgerObject
 from xrpl.models.required import REQUIRED
-from xrpl.models.utils import require_kwargs_on_init
+from xrpl.models.utils import isFlagEnabled, require_kwargs_on_init
 
 
 @require_kwargs_on_init
@@ -75,3 +76,37 @@ class OfferFlag(Enum):
 
     LSF_PASSIVE = 0x00010000
     LSF_SELL = 0x00020000
+
+
+class OfferFlagsInterface(FlagInterface):
+    """
+    Docs:
+    https://xrpl.org/docs/references/protocol/ledger-data/ledger-entry-types/offer#offer-flags
+    """
+
+    LSF_PASSIVE: bool
+    LSF_SELL: bool
+
+
+def parseOfferFlags(flags: int) -> OfferFlagsInterface:
+    """
+    Parses integer flag input into a FlagsInterface object
+
+    Args:
+        flags: Input flags are represented as an integer
+
+    Returns:
+        OfferFlagsInterface object is returned
+
+    """
+    # flags_interface will be cast into a OfferFlagsInterface at the end
+    # A Dictionary is used instead of a TypedDict because the former allows arbitrary
+    # string indexes. This is useful to traverse across OfferFlags enum
+    flags_interface = {}
+
+    for flag in OfferFlag:
+        if isFlagEnabled(flags, flag.value):
+            flags_interface[flag.name] = True
+        else:
+            flags_interface[flag.name] = False
+    return cast(OfferFlagsInterface, flags_interface)
