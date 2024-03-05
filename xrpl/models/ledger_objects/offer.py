@@ -105,8 +105,5 @@ def parseOfferFlags(flags: int) -> OfferFlagsInterface:
     flags_interface = {}
 
     for flag in OfferFlag:
-        if isFlagEnabled(flags, flag.value):
-            flags_interface[flag.name] = True
-        else:
-            flags_interface[flag.name] = False
+        flags_interface[flag.name] = isFlagEnabled(flags, flag.value)
     return cast(OfferFlagsInterface, flags_interface)
