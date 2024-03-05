@@ -74,6 +74,6 @@ def isFlagEnabled(flags: int, checkFlag: int) -> bool:
         checkFlag: A specific flag to check if it's enabled in flags.
 
     Returns:
-        bool: A true or false value verifying the presence of checkFlag in flags
+        bool: true if checkFlag is enabled in flags
     """
     return (flags & checkFlag) == checkFlag
