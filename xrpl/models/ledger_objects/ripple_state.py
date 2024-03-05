@@ -133,8 +133,5 @@ def parseRippleStateFlags(flags: int) -> RippleStateFlagsInterface:
     flags_interface = {}
 
     for flag in RippleStateFlag:
-        if isFlagEnabled(flags, flag.value):
-            flags_interface[flag.name] = True
-        else:
-            flags_interface[flag.name] = False
+        flags_interface[flag.name] = isFlagEnabled(flags, flag.value)
     return cast(RippleStateFlagsInterface, flags_interface)
