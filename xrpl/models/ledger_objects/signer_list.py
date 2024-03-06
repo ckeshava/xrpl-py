@@ -57,9 +57,8 @@ class SignerListFlag(Enum):
 
 
 class SignerListFlagsInterface(FlagInterface):
-    """
-    Docs:
-    https://xrpl.org/docs/references/protocol/ledger-data/ledger-entry-types/signerlist/#signerlist-flags
+    """This is used to indicate the presence of certain flags in the SignerList Ledger
+    Object
     """
 
     LSF_ONE_OWNER_COUNT: bool

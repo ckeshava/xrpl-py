@@ -89,9 +89,7 @@ class NFTokenOfferFlags(Enum):
 
 
 class NFTokenOfferFlagsInterface(FlagInterface):
-    """Docs:
-    https://xrpl.org/docs/references/protocol/ledger-data/ledger-entry-types/nftokenoffer#nftokenoffer-flags
-    """
+    """The flags interface class for the `NFTokenOffer` Ledger Object"""
 
     LSF_SELL_NFTOKEN: bool
 

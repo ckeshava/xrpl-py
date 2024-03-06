@@ -79,9 +79,8 @@ class OfferFlag(Enum):
 
 
 class OfferFlagsInterface(FlagInterface):
-    """
-    Docs:
-    https://xrpl.org/docs/references/protocol/ledger-data/ledger-entry-types/offer#offer-flags
+    """This is used to indicate the presence of certain flags in the Offer Ledger
+    Object
     """
 
     LSF_PASSIVE: bool

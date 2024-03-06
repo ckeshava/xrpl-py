@@ -101,9 +101,8 @@ class RippleStateFlag(Enum):
 
 
 class RippleStateFlagsInterface(FlagInterface):
-    """
-    Docs:
-    https://xrpl.org/docs/references/protocol/ledger-data/ledger-entry-types/ripplestate/#ripplestate-flags
+    """This is used to indicate the presence of certain flags in the RippleState Ledger
+    Object
     """
 
     LSF_LOW_RESERVE: bool
