@@ -81,8 +81,5 @@ def parseSignerListFlags(flags: int) -> SignerListFlagsInterface:
     flags_interface = {}
 
     for flag in SignerListFlag:
-        if isFlagEnabled(flags, flag.value):
-            flags_interface[flag.name] = True
-        else:
-            flags_interface[flag.name] = False
+        flags_interface[flag.name] = isFlagEnabled(flags, flag.value)
     return cast(SignerListFlagsInterface, flags_interface)

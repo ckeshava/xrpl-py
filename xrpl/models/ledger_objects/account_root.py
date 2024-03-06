@@ -190,8 +190,5 @@ def parseAccountRootFlags(flags: int) -> AccountRootFlagsInterface:
     flags_interface = {}
 
     for flag in AccountRootFlags:
-        if isFlagEnabled(flags, flag.value):
-            flags_interface[flag.name] = True
-        else:
-            flags_interface[flag.name] = False
+        flags_interface[flag.name] = isFlagEnabled(flags, flag.value)
     return cast(AccountRootFlagsInterface, flags_interface)
