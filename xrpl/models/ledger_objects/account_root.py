@@ -155,7 +155,7 @@ class AccountRootFlags(Enum):
 
 
 class AccountRootFlagsInterface(FlagInterface):
-    """Docs: https://xrpl.org/accountset.html#accountset-flags"""
+    """The flags interface class for the `AccountRoot` Ledger Object"""
 
     LSF_ALLOW_TRUSTLINE_CLAWBACK: bool
     LSF_DEFAULT_RIPPLE: bool
