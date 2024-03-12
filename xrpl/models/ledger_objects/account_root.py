@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, cast
+from typing import Optional, Type, TypeVar, cast
 
 from xrpl.models.flags import FlagInterface
 from xrpl.models.ledger_objects.ledger_entry_type import LedgerEntryType
@@ -173,22 +173,28 @@ class AccountRootFlagsInterface(FlagInterface):
     LSF_REQUIRE_DEST_TAG: bool
 
 
-def parseAccountRootFlags(flags: int) -> AccountRootFlagsInterface:
+B = TypeVar("B", bound=FlagInterface)
+
+
+def parseFlags(flags: int, flagsEnum: type[Enum], outputFlagInterface: Type[B]) -> B:
     """
     Parses integer flag input into a FlagsInterface object
 
     Args:
         flags: Input flags are represented as an integer
+        flagsEnum: An enum object holding all the flags of a Ledger Object
+        outputFlagInterface: Parameter that decides the output type
 
     Returns:
-        AccountRootFlagsInterface object is returned
+        FlagsInterface object is returned
 
     """
-    # flags_interface will be cast into a AccountRootFlagsInterface at the end
+    # flags_interface will be cast into a FlagsInterface at the end
     # A Dictionary is used instead of a TypedDict because the former allows arbitrary
-    # string indexes. This is useful to traverse across AccountRootFlags
+    # string indexes. This is useful to traverse across Ledger Object Flags Enum
     flags_interface = {}
 
-    for flag in AccountRootFlags:
+    for flag in flagsEnum:
         flags_interface[flag.name] = isFlagEnabled(flags, flag.value)
-    return cast(AccountRootFlagsInterface, flags_interface)
+
+    return cast(B, flags_interface)

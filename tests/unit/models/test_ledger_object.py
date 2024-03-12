@@ -31,7 +31,7 @@ from xrpl.models.ledger_objects import (
 from xrpl.models.ledger_objects.account_root import (
     AccountRootFlags,
     AccountRootFlagsInterface,
-    parseAccountRootFlags,
+    parseFlags,
 )
 from xrpl.models.ledger_objects.amm import AuctionSlot, VoteEntry
 from xrpl.models.ledger_objects.bridge import Bridge
@@ -39,22 +39,15 @@ from xrpl.models.ledger_objects.ledger_object import LedgerObject
 from xrpl.models.ledger_objects.nftoken_offer import (
     NFTokenOfferFlags,
     NFTokenOfferFlagsInterface,
-    parseNFTokenOfferFlags,
 )
-from xrpl.models.ledger_objects.offer import (
-    OfferFlag,
-    OfferFlagsInterface,
-    parseOfferFlags,
-)
+from xrpl.models.ledger_objects.offer import OfferFlag, OfferFlagsInterface
 from xrpl.models.ledger_objects.ripple_state import (
     RippleStateFlag,
     RippleStateFlagsInterface,
-    parseRippleStateFlags,
 )
 from xrpl.models.ledger_objects.signer_list import (
     SignerListFlag,
     SignerListFlagsInterface,
-    parseSignerListFlags,
 )
 from xrpl.models.ledger_objects.xchain_owned_claim_id import (
     XChainClaimProofSig,
@@ -504,16 +497,22 @@ xchain_owned_create_account_claim_id_json = {
 
 
 class TestParseFlags(TestCase):
-    def test_parse_signer_list_flags(self) -> None:
+    def test_parse_offer_flags(self) -> None:
         # testcase where no flag is set
-        sl_flags: int = 0
-        parsed_flags: SignerListFlagsInterface = parseSignerListFlags(sl_flags)
-        self.assertFalse(parsed_flags["LSF_ONE_OWNER_COUNT"])
+        offer_flags: int = 0
+        parsed_flags: OfferFlagsInterface = parseFlags(
+            offer_flags, flagsEnum=OfferFlag, outputFlagInterface=OfferFlagsInterface
+        )
+        self.assertFalse(parsed_flags["LSF_PASSIVE"])
+        self.assertFalse(parsed_flags["LSF_SELL"])
 
-        # validating the case when the flag is set
-        sl_flags = SignerListFlag.LSF_ONE_OWNER_COUNT.value
-        parsed_flags = parseSignerListFlags(sl_flags)
-        self.assertTrue(parsed_flags["LSF_ONE_OWNER_COUNT"])
+        # validating the case when one of the flags is set
+        offer_flags = OfferFlag.LSF_PASSIVE.value
+        parsed_flags = parseFlags(
+            offer_flags, flagsEnum=OfferFlag, outputFlagInterface=OfferFlagsInterface
+        )
+        self.assertTrue(parsed_flags["LSF_PASSIVE"])
+        self.assertFalse(parsed_flags["LSF_SELL"])
 
     def test_parse_ripple_state_flags(self) -> None:
         rs_flags: int = (
@@ -521,7 +520,11 @@ class TestParseFlags(TestCase):
             | RippleStateFlag.LSF_HIGH_NO_RIPPLE.value
             | RippleStateFlag.LSF_HIGH_AUTH.value
         )
-        parsed_flags: RippleStateFlagsInterface = parseRippleStateFlags(rs_flags)
+        parsed_flags: RippleStateFlagsInterface = parseFlags(
+            rs_flags,
+            flagsEnum=RippleStateFlag,
+            outputFlagInterface=RippleStateFlagsInterface,
+        )
         self.assertFalse(parsed_flags["LSF_HIGH_RESERVE"])
         self.assertFalse(parsed_flags["LSF_LOW_AUTH"])
         self.assertFalse(parsed_flags["LSF_LOW_FREEZE"])
@@ -532,30 +535,42 @@ class TestParseFlags(TestCase):
         self.assertTrue(parsed_flags["LSF_HIGH_NO_RIPPLE"])
         self.assertTrue(parsed_flags["LSF_HIGH_AUTH"])
 
-    def test_parse_offer_flags(self) -> None:
+    def test_parse_signer_list_flags(self) -> None:
         # testcase where no flag is set
-        offer_flags: int = 0
-        parsed_flags: OfferFlagsInterface = parseOfferFlags(offer_flags)
-        self.assertFalse(parsed_flags["LSF_PASSIVE"])
-        self.assertFalse(parsed_flags["LSF_SELL"])
+        sl_flags: int = 0
+        parsed_flags: SignerListFlagsInterface = parseFlags(
+            sl_flags,
+            flagsEnum=SignerListFlag,
+            outputFlagInterface=SignerListFlagsInterface,
+        )
+        self.assertFalse(parsed_flags["LSF_ONE_OWNER_COUNT"])
 
-        # validating the case when one of the flags is set
-        offer_flags = OfferFlag.LSF_PASSIVE.value
-        parsed_flags = parseOfferFlags(offer_flags)
-        self.assertTrue(parsed_flags["LSF_PASSIVE"])
-        self.assertFalse(parsed_flags["LSF_SELL"])
+        # validating the case when the flag is set
+        sl_flags = SignerListFlag.LSF_ONE_OWNER_COUNT.value
+        parsed_flags = parseFlags(
+            sl_flags,
+            flagsEnum=SignerListFlag,
+            outputFlagInterface=SignerListFlagsInterface,
+        )
+        self.assertTrue(parsed_flags["LSF_ONE_OWNER_COUNT"])
 
     def test_parse_nft_offer_flags(self) -> None:
         # testcase where no flag is set
         nft_offer_flags: int = 0
-        parsed_flags: NFTokenOfferFlagsInterface = parseNFTokenOfferFlags(
-            nft_offer_flags
+        parsed_flags: NFTokenOfferFlagsInterface = parseFlags(
+            nft_offer_flags,
+            flagsEnum=NFTokenOfferFlags,
+            outputFlagInterface=NFTokenOfferFlagsInterface,
         )
         self.assertFalse(parsed_flags["LSF_SELL_NFTOKEN"])
 
         # validating the case when the flag is set
         nft_offer_flags = NFTokenOfferFlags.LSF_SELL_NFTOKEN.value
-        parsed_flags = parseNFTokenOfferFlags(nft_offer_flags)
+        parsed_flags = parseFlags(
+            nft_offer_flags,
+            flagsEnum=NFTokenOfferFlags,
+            outputFlagInterface=NFTokenOfferFlagsInterface,
+        )
         self.assertTrue(parsed_flags["LSF_SELL_NFTOKEN"])
 
     def test_parse_account_root_flags(self) -> None:
@@ -565,7 +580,11 @@ class TestParseFlags(TestCase):
             | AccountRootFlags.LSF_DEPOSIT_AUTH.value
         )
 
-        parsed_flags: AccountRootFlagsInterface = parseAccountRootFlags(acct_root_flags)
+        parsed_flags: AccountRootFlagsInterface = parseFlags(
+            acct_root_flags,
+            flagsEnum=AccountRootFlags,
+            outputFlagInterface=AccountRootFlagsInterface,
+        )
 
         self.assertTrue(
             parsed_flags["LSF_ALLOW_TRUSTLINE_CLAWBACK"]

@@ -4,14 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Optional, cast
+from typing import Optional
 
 from xrpl.models.amounts.issued_currency_amount import IssuedCurrencyAmount
 from xrpl.models.flags import FlagInterface
 from xrpl.models.ledger_objects.ledger_entry_type import LedgerEntryType
 from xrpl.models.ledger_objects.ledger_object import HasPreviousTxnID, LedgerObject
 from xrpl.models.required import REQUIRED
-from xrpl.models.utils import isFlagEnabled, require_kwargs_on_init
+from xrpl.models.utils import require_kwargs_on_init
 
 
 @require_kwargs_on_init
@@ -113,24 +113,3 @@ class RippleStateFlagsInterface(FlagInterface):
     LSF_HIGH_NO_RIPPLE: bool
     LSF_LOW_FREEZE: bool
     LSF_HIGH_FREEZE: bool
-
-
-def parseRippleStateFlags(flags: int) -> RippleStateFlagsInterface:
-    """
-    Parses integer flag input into a FlagsInterface object
-
-    Args:
-        flags: Input flags are represented as an integer
-
-    Returns:
-        RippleStateFlagsInterface object is returned
-
-    """
-    # flags_interface will be cast into a RippleStateFlagsInterface at the end
-    # A Dictionary is used instead of a TypedDict because the former allows arbitrary
-    # string indexes. This is useful to traverse across RippleStateFlag enum
-    flags_interface = {}
-
-    for flag in RippleStateFlag:
-        flags_interface[flag.name] = isFlagEnabled(flags, flag.value)
-    return cast(RippleStateFlagsInterface, flags_interface)
