@@ -1,4 +1,3 @@
-import random
 import time
 
 from tests.integration.integration_test_case import IntegrationTestCase
@@ -15,17 +14,22 @@ from xrpl.utils import str_to_hex
 _PROVIDER = str_to_hex("provider")
 _ASSET_CLASS = str_to_hex("currency")
 
+_ORACLE_DOC_ID = 1
+
 
 class TestSetOracle(IntegrationTestCase):
     @test_async_and_sync(globals())
     async def test_all_fields(self, client):
+        global _ORACLE_DOC_ID
+        _ORACLE_DOC_ID = _ORACLE_DOC_ID + 1
+
         tx = OracleSet(
             account=WALLET.address,
             # if oracle_document_id is not modified, the (sync, async) +
             # (json, websocket) combination of integration tests will update the same
             # oracle object using identical "LastUpdateTime". Updates to an oracle must
             # be more recent than its previous LastUpdateTime
-            oracle_document_id=random.randint(100, 300),
+            oracle_document_id=_ORACLE_DOC_ID,
             provider=_PROVIDER,
             asset_class=_ASSET_CLASS,
             last_update_time=int(time.time()),
@@ -38,9 +42,15 @@ class TestSetOracle(IntegrationTestCase):
                 ),
             ],
         )
+
         response = await sign_and_reliable_submission_async(tx, WALLET, client)
         self.assertEqual(response.status, ResponseStatus.SUCCESS)
         self.assertEqual(response.result["engine_result"], "tesSUCCESS")
+
+        print("using the doc id:")
+        print(_ORACLE_DOC_ID)
+
+        self.assertEqual(1, 2)
 
         # confirm that the PriceOracle was actually created
         account_objects_response = await client.request(
