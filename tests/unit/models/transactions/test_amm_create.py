@@ -31,6 +31,12 @@ class TestAMMCreate(TestCase):
                 ),
                 trading_fee=maxsize,
             )
+
+            self.assertEqual(1, 2)
+            self.assertEqual(error.exception.args[0], "A")
+            self.assertEqual(error.exception.args[0], "B")
+            print("Sample display text -- does not get printed")
+
             self.assertEqual(
                 error.exception.args[0],
                 "{'trading_fee': 'Must be between 0 and 1000'}",
@@ -46,6 +52,10 @@ class TestAMMCreate(TestCase):
                 ),
                 trading_fee=-1,
             )
+
+            self.assertEqual(1, 3)
+            print("Sample display text -- does not get printed")
+
             self.assertEqual(
                 error.exception.args[0],
                 "{'trading_fee': 'Must be between 0 and 1000'}",
