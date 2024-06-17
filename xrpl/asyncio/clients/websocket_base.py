@@ -45,6 +45,7 @@ def _inject_request_id(request: Request) -> Request:
         return request
     request_dict = request.to_dict()
     request_dict["id"] = f"{request.method}_{randrange(_REQ_ID_MAX)}"
+    # if requests are assigned new IDs, how do you detect duplicates?
     return Request.from_dict(request_dict)
 
 
@@ -195,6 +196,7 @@ class WebsocketBase(Client):
         Returns:
             The top message from the queue
         """
+        # read one msg from the message queue
         msg = await cast(_MESSAGES_TYPE, self._messages).get()
         cast(_MESSAGES_TYPE, self._messages).task_done()
         return msg
@@ -224,10 +226,16 @@ class WebsocketBase(Client):
         # fire-and-forget the send, and await the Future
         asyncio.create_task(self._do_send_no_future(request_with_id))
 
+        # simulate some kind of delay on the server-side in responding to the requests
+        await asyncio.sleep(5)
+
         try:
             raw_response = await asyncio.wait_for(
                 self._open_requests[request_str], timeout
             )
+        except Exception as e:
+            print("FATAL ERROR: Unable to fulfill the request: " + request_str)
+            print(e)
         finally:
             # remove the resolved Future, hopefully getting it garbage colleted
             # Ensure the request is removed whether it times out or not
