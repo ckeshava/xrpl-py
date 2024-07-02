@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from xrpl.asyncio.transaction.main import sign
 from xrpl.models.exceptions import XRPLModelException
-from xrpl.models.transactions import AccountSet, OfferCreate, Payment
+from xrpl.models.transactions import AccountDelete, AccountSet, OfferCreate, Payment
 from xrpl.models.transactions.transaction import Transaction
 from xrpl.models.transactions.types.transaction_type import TransactionType
 from xrpl.transaction.multisign import multisign
@@ -21,6 +21,21 @@ EXAMPLE_DOMAIN = str_to_hex("example.com")
 
 
 class TestTransaction(TestCase):
+    def test_get_transaction_type_from_txn(self):
+        self.assertEqual(
+            Transaction.get_transaction_type("AccountDelete"), AccountDelete
+        )
+
+    def test_get_transaction_type_incorrect_input(self):
+        with self.assertRaises(XRPLModelException):
+            Transaction.get_transaction_type("NonExistentTxn")
+
+    def test_get_transaction_type_incorrect_child_class_1(self):
+        self.assertEqual(Payment.get_transaction_type("AccountDelete"), AccountDelete)
+
+    def test_get_transaction_type_incorrect_child_class_2(self):
+        self.assertEqual(AccountDelete.get_transaction_type("Payment"), Payment)
+
     def test_missing_required_field(self):
         with self.assertRaises(XRPLModelException):
             # missing account

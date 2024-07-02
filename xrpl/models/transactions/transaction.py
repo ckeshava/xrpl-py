@@ -348,7 +348,7 @@ class Transaction(BaseModel):
                     "Transaction does not include transaction_type."
                 )
             correct_type = cls.get_transaction_type(value["transaction_type"])
-            return correct_type.from_dict(value)  # type: ignore
+            return correct_type.from_dict(value)
         else:
             if "transaction_type" in value:
                 if value["transaction_type"] != cls.__name__:
@@ -420,9 +420,7 @@ class Transaction(BaseModel):
         return sha512(encoded_str).digest().hex().upper()[:64]
 
     @classmethod
-    def get_transaction_type(
-        cls: Type[Self], transaction_type: str
-    ) -> Type[Transaction]:
+    def get_transaction_type(cls: Type[Self], transaction_type: str) -> Type[Self]:
         """
         Returns the correct transaction type based on the string name.
 
@@ -438,14 +436,14 @@ class Transaction(BaseModel):
         import xrpl.models.transactions as transaction_models
         import xrpl.models.transactions.pseudo_transactions as pseudo_transaction_models
 
-        transaction_types: Dict[str, Type[Transaction]] = {
+        transaction_types: Dict[str, Type[Self]] = {
             t.value: getattr(transaction_models, t)
             for t in transaction_models.types.TransactionType
         }
         if transaction_type in transaction_types:
             return transaction_types[transaction_type]
 
-        pseudo_transaction_types: Dict[str, Type[Transaction]] = {
+        pseudo_transaction_types: Dict[str, Type[Self]] = {
             t.value: getattr(pseudo_transaction_models, t)
             for t in transaction_models.types.PseudoTransactionType
         }
