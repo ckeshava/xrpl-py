@@ -43,3 +43,33 @@ class TestUInt(TestCase):
         self.assertRaises(XRPLBinaryCodecException, UInt16.from_value, invalid_value)
         self.assertRaises(XRPLBinaryCodecException, UInt32.from_value, invalid_value)
         self.assertRaises(XRPLBinaryCodecException, UInt64.from_value, invalid_value)
+
+    def test_construct_max_value(self):
+        self.assertEqual(UInt8.from_value(2**8 - 1), 2**8 - 1)
+        self.assertEqual(UInt16.from_value(2**16 - 1), 2**16 - 1)
+        self.assertEqual(UInt32.from_value(2**32 - 1), 2**32 - 1)
+
+        # UINT64 type can be constructed with both int and str inputs
+        self.assertEqual(UInt64.from_value(2**64 - 1), 2**64 - 1)
+        self.assertEqual(UInt64.from_value("FFFFFFFFFFFFFFFF"), 18446744073709551615)
+        self.assertEqual(UInt64.from_value("FFFFFFFFFFFFFFFF"), 0xFFFFFFFFFFFFFFFF)
+
+    def test_raises_overflow_error(self):
+        """This method documents the out-of-bounds upper limits for the UINT types"""
+        self.assertRaises(OverflowError, UInt8.from_value, 2**8)
+        self.assertRaises(OverflowError, UInt16.from_value, 2**16)
+        self.assertRaises(OverflowError, UInt32.from_value, 2**32)
+        self.assertRaises(OverflowError, UInt64.from_value, 2**64)
+
+    def test_to_json_output_type(self):
+        # UINT32 type accepts a base-10 str as input, whereas UINT64 type accepts a
+        # base-16 str type as input
+        self.assertEqual(UInt32.from_value("4294967295"), 4294967295)
+
+        # UINT32 type returns a (base-10) int with to_json() method
+        self.assertEqual(UInt32.from_value(2**32 - 1).to_json(), 4294967295)
+
+        # UINT64 type returns a (base-16) str type with to_json() method
+        self.assertEqual(
+            UInt64.from_value("FFFFFFFFFFFFFFFF").to_json(), "FFFFFFFFFFFFFFFF"
+        )
