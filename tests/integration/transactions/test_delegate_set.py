@@ -6,6 +6,7 @@ from tests.integration.it_utils import (
 )
 from xrpl.models.requests import LedgerEntry
 from xrpl.models.requests.account_info import AccountInfo
+from xrpl.models.requests.account_tx import AccountTx
 from xrpl.models.requests.ledger_entry import Delegate
 from xrpl.models.response import ResponseStatus
 from xrpl.models.transactions import DelegateSet, Payment
@@ -74,13 +75,6 @@ class TestDelegateSet(IntegrationTestCase):
         )
         alice_next_seq = alice_account_info.result["account_data"]["Sequence"]
 
-        bob_account_info = await client.request(
-            AccountInfo(
-                account=bob.address,
-            ),
-        )
-        bob_next_seq = bob_account_info.result["account_data"]["Sequence"]
-
         # Use the bob's account to execute a transaction on behalf of alice
         payment = Payment(
             account=alice.address,
@@ -99,15 +93,25 @@ class TestDelegateSet(IntegrationTestCase):
             alice_next_seq,
         )
 
-        self.assertNotEqual(
-            response.result["tx_json"]["Sequence"],
-            bob_next_seq,
-        )
+        payment_tx_hash = response.result["tx_json"]["hash"]
 
         # Validate that the transaction was signed by bob
         self.assertEqual(response.result["tx_json"]["Account"], alice.address)
         self.assertEqual(response.result["tx_json"]["Delegate"], bob.address)
         self.assertEqual(response.result["tx_json"]["SigningPubKey"], bob.public_key)
+
+        # The below code snippet demonstrates that even the delegate account indexes
+        # the above transaction. Hence, the above transaction can be found in the
+        # delegate account's transaction history.
+        account_tx = await client.request(
+            AccountTx(
+                account=bob.address,
+                ledger_index="validated",
+            ),
+        )
+
+        bob_tx_hashes = [tx["hash"] for tx in account_tx.result["transactions"]]
+        self.assertTrue(payment_tx_hash in bob_tx_hashes)
 
     @test_async_and_sync(globals())
     async def test_fetch_delegate_ledger_entry(self, client):
