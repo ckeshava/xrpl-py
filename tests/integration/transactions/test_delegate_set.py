@@ -5,6 +5,7 @@ from tests.integration.it_utils import (
     test_async_and_sync,
 )
 from xrpl.models.requests import LedgerEntry
+from xrpl.models.requests.account_info import AccountInfo
 from xrpl.models.requests.ledger_entry import Delegate
 from xrpl.models.response import ResponseStatus
 from xrpl.models.transactions import DelegateSet, Payment
@@ -63,6 +64,23 @@ class TestDelegateSet(IntegrationTestCase):
         self.assertEqual(response.status, ResponseStatus.SUCCESS)
         self.assertEqual(response.result["engine_result"], "tesSUCCESS")
 
+        # fetch the next sequence number of alice and bob's account -- this test
+        # demonstrates that alice's (delegating account)  not bob's (delegate account's)
+        # sequence number will be consumed.
+        alice_account_info = await client.request(
+            AccountInfo(
+                account=alice.address,
+            ),
+        )
+        alice_next_seq = alice_account_info.result["account_data"]["Sequence"]
+
+        bob_account_info = await client.request(
+            AccountInfo(
+                account=bob.address,
+            ),
+        )
+        bob_next_seq = bob_account_info.result["account_data"]["Sequence"]
+
         # Use the bob's account to execute a transaction on behalf of alice
         payment = Payment(
             account=alice.address,
@@ -73,8 +91,18 @@ class TestDelegateSet(IntegrationTestCase):
         response = await sign_and_reliable_submission_async(
             payment, bob, client, check_fee=False
         )
+
         self.assertEqual(response.status, ResponseStatus.SUCCESS)
         self.assertEqual(response.result["engine_result"], "tesSUCCESS")
+        self.assertEqual(
+            response.result["tx_json"]["Sequence"],
+            alice_next_seq,
+        )
+
+        self.assertNotEqual(
+            response.result["tx_json"]["Sequence"],
+            bob_next_seq,
+        )
 
         # Validate that the transaction was signed by bob
         self.assertEqual(response.result["tx_json"]["Account"], alice.address)
