@@ -223,3 +223,36 @@ class TestMain(TestCase):
             "030D58EB48B4420B1F7B9DF55087E0E29FEF0E8468F9A6825B01CA2C361042D435",
         )
         self.assertFalse(output)
+
+    def test_is_valid_message_malformed_inputs_do_not_raise(self):
+        """Regression test for issue #988: malformed signatures and public
+        keys must return ``False`` instead of propagating exceptions from
+        the backend verifier (IndexError, AttributeError, ValueError,
+        TypeError). Every case here used to raise before the fix."""
+        ed_pub = "ED01FA53FA5A7E77798F882ECE20B1ABC00BB358A9E55A202D0D0676BD0CE37A63"
+        secp_pub = "030D58EB48B4420B1F7B9DF55087E0E29FEF0E8468F9A6825B01CA2C361042D435"
+        good_ed_sig = bytes.fromhex(
+            "CB199E1BFD4E3DAA105E4832EEDFA36413E1F442"
+            "05E4EFB9E27E826044C21E3E2E848BBC8195E895"
+            "9BADF887599B7310AD1B7047EF11B682E0D068F73749750E"
+        )
+        good_secp_sig = bytes.fromhex(
+            "30440220583A91C95E54E6A651C47BEC22744E0B101E2C"
+            "4060E7B08F6341657DAD9BC3EE02207D1489C7395DB018"
+            "8D3A56A977ECBA54B36FA9371B40319655B1B4429E33EF2D"
+        )
+        # (label, signature, public_key)
+        cases = [
+            ("ed25519 truncated sig", good_ed_sig[:-1], ed_pub),
+            ("ed25519 oversize sig", good_ed_sig + b"\x00", ed_pub),
+            ("secp256k1 empty sig", b"", secp_pub),
+            ("secp256k1 short DER", b"\x30\x00", secp_pub),
+            ("secp256k1 truncated sig", good_secp_sig[:5], secp_pub),
+            ("empty public key", good_ed_sig, ""),
+            ("non-hex public key", good_ed_sig, "ED" + "ZZ" * 32),
+        ]
+        for label, sig, pub in cases:
+            self.assertFalse(
+                keypairs.is_valid_message(b"test message", sig, pub),
+                f"{label}: expected False, but verification did not reject",
+            )

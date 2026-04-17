@@ -134,12 +134,21 @@ def is_valid_message(message: bytes, signature: bytes, public_key: str) -> bool:
 
     Returns:
         Whether the message is valid for the given signature and public key.
+        Returns ``False`` if the signature or public key is malformed (e.g.
+        truncated, wrong length, or non-hex) rather than propagating the
+        backend verifier's exception.
     """
-    return _get_module_from_key(public_key).is_valid_message(
-        message,
-        signature,
-        public_key,
-    )
+    try:
+        return _get_module_from_key(public_key).is_valid_message(
+            message,
+            signature,
+            public_key,
+        )
+    except (IndexError, AttributeError, ValueError, TypeError):
+        # ECPy's verifier (and bytes.fromhex on the public key) raise these
+        # on malformed input instead of returning False. Normalize to False so
+        # callers don't need to wrap every verify call in their own guard.
+        return False
 
 
 def _get_module_from_key(key: str) -> Type[CryptoImplementation]:
