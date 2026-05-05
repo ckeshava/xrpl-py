@@ -1,3 +1,4 @@
+import unittest
 from unittest import TestCase
 
 from xrpl.core.binarycodec import XRPLBinaryCodecException
@@ -153,3 +154,48 @@ class TestIssue(TestCase):
         # Test that providing an invalid input type raises an XRPLBinaryCodecException.
         invalid_value = 1
         self.assertRaises(XRPLBinaryCodecException, Issue.from_value, invalid_value)
+
+    # The three tests below pin down a known inconsistency between Issue.from_value,
+    # Issue.from_parser, and Issue.to_json for MPT issues — see xrpl.js #3332 and
+    # rippled #7035. The 4-byte sequence portion of the wire layout
+    # (issuer || NO_ACCOUNT || seq) is treated as little-endian by from_value /
+    # to_json but stored verbatim by from_parser. A non-palindromic sequence
+    # (0x00010203) is used so the byte reversal is visible byte-for-byte.
+
+    _MPT_ISSUANCE_ID = "00010203E0739D43718DB5815CE070D4D514A261EC872C93"
+    _ISSUER_HEX = "E0739D43718DB5815CE070D4D514A261EC872C93"
+    _NO_ACCOUNT_HEX = "0000000000000000000000000000000000000001"
+    # Wire blob with the sequence bytes in big-endian order (matching the byte
+    # order of mpt_issuance_id itself).
+    _WIRE_SEQ_BE = _ISSUER_HEX + _NO_ACCOUNT_HEX + "00010203"
+
+    @unittest.expectedFailure
+    def test_from_value_and_from_parser_be_wire_buffers_match(self):
+        # Same logical MPT issue, two construction paths -> internal buffers
+        # should be equal. They aren't: from_value stores seq LE, from_parser
+        # stores it verbatim.
+        from_json = Issue.from_value({"mpt_issuance_id": self._MPT_ISSUANCE_ID})
+        from_wire = Issue.from_parser(BinaryParser(self._WIRE_SEQ_BE))
+        self.assertEqual(from_json.to_hex().upper(), from_wire.to_hex().upper())
+
+    @unittest.expectedFailure
+    def test_from_parser_be_wire_round_trips_mpt_issuance_id(self):
+        # Parsing a wire blob whose sequence bytes are big-endian (the byte
+        # order of mpt_issuance_id) should yield JSON whose mpt_issuance_id
+        # equals the input. Today, to_json reads the trailing 4 bytes as LE
+        # and emits a byte-reversed sequence, e.g.
+        #   expected: 00010203E0739D43...EC872C93
+        #   actual:   03020100E0739D43...EC872C93
+        from_wire = Issue.from_parser(BinaryParser(self._WIRE_SEQ_BE))
+        self.assertEqual(
+            from_wire.to_json(),
+            {"mpt_issuance_id": self._MPT_ISSUANCE_ID},
+        )
+
+    @unittest.expectedFailure
+    def test_to_json_consistent_across_construction_paths(self):
+        # Constructing the same logical MPT issue from JSON and from a BE-seq
+        # wire blob should yield the same JSON.
+        from_json = Issue.from_value({"mpt_issuance_id": self._MPT_ISSUANCE_ID})
+        from_wire = Issue.from_parser(BinaryParser(self._WIRE_SEQ_BE))
+        self.assertEqual(from_json.to_json(), from_wire.to_json())
